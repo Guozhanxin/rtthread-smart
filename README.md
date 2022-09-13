@@ -2,20 +2,12 @@
 
 目录说明
 
-![folders](folders.drawio.png)
-
-面向开发人员，可以在Linux环境下执行prepare.py脚本，它会准备/拉取基本的仓库环境。
-
 | 目录名 | 说明 |
 | ------ | ------ |
 | kernel | rt-smart的内核仓库，开源的rt-thread rt-smart分支，未来合并到RT-Thread v5.0中 |
-| sdk/rt-thread | 用户态的rt-thread crt库； |
 | userapps | 用户态应用程序； |
 | userapps/apps | 可以进行单独编译，它会自行搜素父目录下的配置文件（.config、rtconfig.h），一般这个配置文件会放在userapps目录下； |
-| userapps/gnu-apps | 外部git仓库，放置gnu的一些应用移植，例如busybox，wget, cURL等 |
 | tools | 一些python脚本，也包括kconfig的前端 |
-
-sdk/rt-thread被关联到了userapps目录下的配置（.config和rtconfig.h），所以这个库能够编译成功，需要依赖于userapps目录的配置文件。
 
 如果是Windows的env环境可以在userapps下执行menuconfig，进行配置 `.config` 来选定AArch32还是AArch64，以及工具链GNU GCC，还是musl-linux工具链等。
 
@@ -71,38 +63,6 @@ CC        => gcc
 PREFIX    => arm-linux-musleabi-
 EXEC_PATH => /mnt/d/Workspace/GitLab/rtthread-smart_wsl/tools/gnu_gcc/arm-linux-musleabi_for_x86_64-pc-linux-gnu/bin
 ```
-
-## 准备内核 SDK
-
-内核 SDK 需要提前准备好，编译成功会生成 `sdk/rt-thread/build/static/librtthread.a` 文件。
-
-```bash
- cd sdk/rt-thread/
- 
- # 编译内核 SDK
- scons
-```
-还需要 install sdk：
-
-```bash
-scons install
-```
-
-除此之外，还需要编译 libdbkit ，编译成功会生成 `sdk/libdbkit/build/libdbkit.a` 文件。
-
-```bash
- cd sdk/libdbkit/
- 
- # 编译 dbkit
- scons
-```
-还需要 install dbkit sdk：
-
-```bash
-scons install
-```
-
-至此，内核 SDK 准备完毕。
 
 ## 编译用户态程序
 
