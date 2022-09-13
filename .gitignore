@@ -24,7 +24,6 @@ documentation/html
 *.i
 *.d
 *.so
-userapps/sdk/rt-thread
 userapps/workspace
 userapps/root
 tools/kconfig-frontends/kconfig-mconf
