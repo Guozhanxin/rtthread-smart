@@ -1,0 +1,48 @@
+{
+    "version": "5.0.0",
+    "project_list": [
+        {
+            "folder": "/userapps/apps",
+            "name": {
+                "en": "Applications",
+                "zh": "应用程序工程"
+            }
+        },
+        {
+            "folder": "/userapps/services",
+            "name": {
+                "en": "Services",
+                "zh": "系统服务"
+            }
+        },
+        {
+            "folder": "/userapps/gnu-apps",
+            "name": {
+                "en": "GNU Apps",
+                "zh": "GNU应用工程"
+            }
+        }
+    ],
+    "toolchain": {
+        "name": "aarch64-linux-musleabi",
+        "installed": true,
+        "version": "7.3.0"
+    },
+    "kernel": {
+        "folder": "/ibsp/bst_a1000"
+    },
+    "env": {
+        "common": {
+            "ARCH": "aarch64",
+            "RTT_CC": "gcc"
+        },
+        "windows": {
+            "RTT_CC_PREFIX": "%ARCH%-linux-musleabi-",
+            "RTT_EXEC_PATH": "${SDK_ROOT}/tools/gnu_gcc/%ARCH%-linux-musleabi_for_i686-w64-mingw32/bin"
+        },
+        "linux": {
+            "RTT_CC_PREFIX" : "${ARCH}-linux-musleabi-",
+            "RTT_EXEC_PATH": "${SDK_ROOT}/tools/gnu_gcc/${ARCH}-linux-musleabi_for_x86_64-pc-linux-gnu/bin"
+       }
+    }
+}

@@ -1,0 +1,34 @@
+{
+    "env": {
+        "windows": {
+            "VENV_MODE": true,
+            "PATH": "%PATH%;%RTT_EXEC_PATH%"
+        },
+        "linux": {
+            "PATH": "$PATH:$RTT_EXEC_PATH"
+        }
+    },
+    "statusBarItem": {
+        "build": {
+            "icon": "$(zap)",
+            "enable": true,
+            "commands": [
+                "scons -C sdk/rt-thread",
+                "scons -C sdk/rt-thread install",
+                "scons -C userapps"
+            ],
+            "label": "编译",
+            "tooltip": "编译 RT-Thread Smart"
+        },
+        "clean": {
+            "icon": "$(clear-all)",
+            "enable": true,
+            "commands": [
+                "scons -C sdk/rt-thread -c",
+                "scons -C userapps -c"
+            ],
+            "label": "清理",
+            "tooltip": "清理 RT-Thread Smart"
+        }
+    }
+}
