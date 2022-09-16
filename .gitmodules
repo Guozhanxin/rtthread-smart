@@ -1,4 +1,4 @@
 [submodule "kernel"]
 	path = kernel
-	url = https://gitee.com/rtthread/rt-thread.git
+	url = https://github.com/RT-Thread/rt-thread.git
 	branch = rt-smart
