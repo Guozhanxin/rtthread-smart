@@ -1,74 +1,76 @@
-# rt-thread smart版本编译说明
+# RT-Smart Compile Instructions
 
-目录说明
+[中文](README_ZH.md)|EN
 
-| 目录名 | 说明 |
-| ------ | ------ |
-| kernel | rt-smart的内核仓库，开源的rt-thread rt-smart分支，未来合并到RT-Thread v5.0中 |
-| userapps | 用户态应用程序； |
-| userapps/apps | 可以进行单独编译，它会自行搜素父目录下的配置文件（.config、rtconfig.h），一般这个配置文件会放在userapps目录下； |
-| tools | 一些python脚本，也包括kconfig的前端 |
+Directory Intro
 
-如果是Windows的env环境可以在userapps下执行menuconfig，进行配置 `.config` 来选定AArch32还是AArch64，以及工具链GNU GCC，还是musl-linux工具链等。
+| Name          | Intro                                                        |
+| ------------- | ------------------------------------------------------------ |
+| kernel        | It is the kernel repository for rt-smart, an open source rt-thread rt-smart branch, which will be merged into RT-Thread v5.0 soon in the future |
+| userapps      | User state application                                       |
+| userapps/apps | It can be compiled separately, and will search for the configuration file under the parent directory (.config, rtconfig.h), generally this configuration file will be placed in the userapps directory; |
+| tools         | Some Python scripts also include a front-end to kconfig      |
 
-另外在这个仓库下也分别提供了Linux/Windows环境下配置环境变量的脚本：
+If it is a Windows env environment, you can perform menuconfig under userapps, configure `.config` to select AArch32 or AArch64, and toolchain GNU GCC, or musl-linux toolchain, etc.
 
-* smart-env.sh - Linux下的环境变量脚本，命令行下以`source smart-env.sh`来配置环境变量
-* smart-env.bat - Windows下的环境变量脚本，可以在env的命令行下运行`smart-env.bat`来配置环境变量
+Else, scripts for configuring environment variables in Linux/Windows environments are also provided under this repository:
 
-## 下载对应工具链
+- smart-env.sh - Environment variable script under Linux, configure environment variables with `source smart-env.sh` on the command line
+- smart-env .bat - Environment variable script under Windows, you can run `smart-env.bat` under the command line of Env to configure environment variables
 
-请先下载对应的工具链并展开到`rtthread-smart/tools/gnu_gcc`目录，这部分可以在 `rtthread-smart/tools` 目录下运行 `get_toolchains.py` 的脚本：
+## Download Corresponding Toolchain
 
-```bash
+Please download the corresponding toolchain and expand to the `rtthread-smart/tools/gnu_gcc` directory, that can run the script of `get_toolchains.py` in the `rtthread-smart/tools` directory:
+
+```
 python3 get_toolchains.py arm
 ```
 
-后面的工具链名称可以是 arm | aarch64 | riscv64，它会自动根据当前的Host开发主机来下载并展开Windows或Linux的工具链。
+The following toolchain name can be arm | aarch64 | riscv64, it will automatically downloads and expands the Toolchain for Windows or Linux based on the current development Host.
 
-## 更新 submodule 子模块
+## Update Submodule
 
-请确保已经更新了submodule:
+Make sure that you've already updated the submodule:
 
-```bash
+```
 git submodule init
 git submodule update
 ```
 
-需要注意，子模块更新下来后需要切到 `rt-smart` 分支：
+Note that after the submodule is updated, it needs to switch to the `rt-smart` branch:
 
-```bash
+```
 cd kernel
 git checkout rt-smart
 
-# 并把kernel的rt-smart分支更新到最新版本
+# 并And update kernel's rt-smart branch to the latest version
 git pull origin rt-smart
 ```
 
-## 配置 smart 开发环境
+## Confiure RT-Smart Development Environment
 
-仓库根目录下有个 `smart-env.sh` 和 `smart-env.bat` 脚本，前者用于 Linux 平台，后者用于 Windows 平台。
+Under the repository root is a `smart-env.sh` and `smart-env.bat` script, the former for Linux and the latter for Windows.
 
-Linux 平台的脚本后面可带参数 arm | aarch64 | riscv64，主动适配 smart 开发环境，以 Linux 平台下用 qemu-vexpress-a9 验证 smart 为例：
+Scripts for Linux platforms can be followed by the parameter arm | aarch64 | riscv64, actively adapting to the RT-Smart development environment. Here we're taking qemu-vexpress-a9 to verify RT-Smart on the Linux platform:
 
-```bash
+```
 source ./smart-env.sh arm
 ```
 
-执行完之后会提示相关信息，检查下相关信息是否正确：
+After the execution, the relevant information will be prompted, check out if the following information is correct:
 
-```bash
+```
 Arch      => arm
 CC        => gcc
 PREFIX    => arm-linux-musleabi-
 EXEC_PATH => /mnt/d/Workspace/GitLab/rtthread-smart_wsl/tools/gnu_gcc/arm-linux-musleabi_for_x86_64-pc-linux-gnu/bin
 ```
 
-## 编译用户态程序
+## Compile User State Application
 
-进入到 `userapps` 目录中，运行 scons：
+Enter `userapps` directory, run the scons:
 
-```bash
+```
 D:/Workspace/GitLab/rtthread-smart_wsl/
 > cd userapps
 > scons
@@ -88,36 +90,38 @@ LINK root\bin\vi.elf
 scons: done building targets.
 ```
 
-在编译完成应用程序后，需要把应用程序放到 rt-smart 运行环境（根文件系统）中，这里有两种方式：
+After compiling the application, you need to put the application into the RT-Smart runtime environment (root file system), here are two methods to get that done:
 
-1. 制作一份 romfs，把应用程序都放到这个 romfs 中，然后转成数组，再和内核编译在一起；
-2. 把它放到运行时用的 SD 卡文件系统中，在 qemu-vexpress-a9 则是 sd.bin 文件；
+1. Make a romfs, put the application into this romfs, then convert it to an array, and compile it with the kernel;
+2. Put it in the SD card file system at runtime, in qemu-vexpress-a9 it is the sd.bin file;
 
-我们这里为了简单起见采用第一种方式：
+I'm taking the first approach as an example here:
 
-- qemu arm 环境更新 ROMFS 源文件命令
+- qemu arm environment updates ROMFS source file command
 
-```bash
+```
 python3 ..\tools\mkromfs.py root ..\kernel\bsp\qemu-vexpress-a9\applications\romfs.c
 ```
-- qemu aarch64 环境更新 ROMFS 源文件命令
+
+- qemu aarch64 environment updates ROMFS source file command
 
 ```
 python3 ..\tools\mkromfs.py root ..\kernel\bsp\qemu-virt64-aarch64\applications\romfs.c
 ```
-**注意：**
 
-目前 userapps 下编译应用会关联到 userapps 目录下的 `.config`，`rtconfig.h` 文件。在 `rtconfig.h` 文件中 `RT_NAME_MAX` 被固定在8字节大小，如果内核调整，这里也需要同步调整。
+NOTE:
 
-## 编译与运行
+Currently, applications compiled under userapps are associated with the `.config`, `rtconfig.h` files in the userapps directory. `RT_NAME_MAX` in the `rtconfig.h` file is fixed at 8 bytes, and if the kernel is tuned, synchronous adjustments are also required here.
+
+## Compile & Run
 
 ### qemu arm
 
-#### BSP 编译
+#### BSP Compile
 
-进入到 `kernel/bsp/qemu-vexpress-a9` 目录中，运行 scons 进行编译：
+Enter the `kernel/bsp/qemu-vexpress-a9` directory and run scons and compile:
 
-```bash
+```
 D:/Workspace/GitLab/rtthread-smart_wsl/kernel/bsp/qemu-vexpress-a9
 
 > scons
@@ -134,11 +138,11 @@ arm-linux-musleabi-size rtthread.elf
 scons: done building targets.
 ```
 
-#### 运行验证
+#### Run & Verify
 
-运行 `/kernel/bsp/qemu-vexpress-a9` 目录下的 `qemu.sh` 或者 `qemu-nographic.sh` 即可：
+Run `qemu.sh` or `qemu-nographic.sh` in the `/kernel/bsp/qemu-vexpress-a9` directory:
 
-```bash
+```
 D:/Workspace/GitLab/rtthread-smart_wsl/kernel/bsp/qemu-vexpress-a9
 
 > ./qemu.sh
@@ -160,21 +164,21 @@ msh />/bin/hello.elf
 hello world!
 ```
 
-上面我们也运行了次编译的应用程序 `/bin/hello.elf`，看到它输出 `hello world!` 然后退出。
+We also ran the compiled application `/bin/hello.elf` above, `hello world!` is output and then exit.
 
-某些应用需要常驻后台运行的，可以在后面加一个空格和 `&` 符号，如：
+Some applications need to run in the background permanently, and you can follow it with a space and an '&' symbol, such as:
 
-```bash
+```
 msh />/bin/xxx.elf &
 ```
 
 ### qemu aarch64
 
-#### BSP 编译
+#### BSP Compile
 
-进入到 `kernel/bsp/qemu-virt64-aarch64` 目录中，运行 scons 进行编译：
+Enter the `kernel/bsp/qemu-virt64-aarch64` directory, run scons and compile:
 
-```bash
+```
 D:\rtthread-smart\kernel\bsp\qemu-virt64-aarch64
 > scons
 scons: Reading SConscript files ...
@@ -190,9 +194,9 @@ aarch64-linux-musleabi-size rtthread.elf
 scons: done building targets.
 ```
 
-#### 运行验证
+#### Run & Verify
 
-执行 `qemu.bat` 启动 qemu 模拟运行：
+Execute `qemu.bat` to enable the qemu simulation and get it run:
 
 ```
 D:\rtthread-smart\kernel\bsp\qemu-virt64-aarch64  
